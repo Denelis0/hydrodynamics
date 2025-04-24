@@ -19,6 +19,8 @@ def boundary_condition(i, j, scheme):
         return y**2 + 1
     if j == 0 and i >= n2:
         return x**2
+    if j < scheme.m // 4 and i < scheme.n // 2:
+        return np.nan
     return 0
 
 def rhs_function(i, j, scheme):
@@ -38,8 +40,6 @@ class Scheme:
         self.rhs_function = rhs_function
         self.boundary_condition = boundary_condition
         self.exact_solution = exact_solution
-
-
         self.grid = np.zeros((n + 1, m + 1))
         self.x = np.linspace(0, w, n + 1)
         self.y = np.linspace(0, h, m + 1)
@@ -87,10 +87,7 @@ class Scheme:
             print(f"Итерация {it + 1}: E_max = {delta:.3e} в точке (i={max_i}, j={max_j})")
             it += 1
 
-        error = None
-        if self.exact_solution:
-            error = np.nanmax(np.abs(self.grid - self.uv))
-        return it, delta, error
+        return it, delta
 
     def plot(self):
         fig, ax = plt.subplots()
@@ -118,7 +115,7 @@ class Scheme:
 
 if __name__ == '__main__':
     s = Scheme(2, 1, 20, 20, rhs_function, boundary_condition, exact_solution)
-    iters, acc, err = s.solve(1e-14, 10000)
+    iters, acc = s.solve(1e-14, 10000)
     print("-----------------------------------------------------------------------------")
     print("Этап 3 лабораторной работы №3: уравнение Пуассона Δu(x,y) = 4 с граничными условиями Дирихле в области с прямоугольными границами.")
     print("Граничные условия:\n"
@@ -131,8 +128,8 @@ if __name__ == '__main__':
     print("Критерии остановки:\n"
           "Число шагов max_iter=10000\n"
           "Точность на шаге eps=10^-14\n")
-    print("Точное решение представлено в виде u(x,y)=x^2 + Y^2\n"
-          "Код реализован методом Зенделя.")
+    print("Точное решение представлено в виде u(x,y)=x^2 + y^2\n"
+          "Решение задачи находилось на основе метода Зенделя.")
     print("-----------------------------------------------------------------------------")
     print("Сравнение точного и численного решения в узлах сетки:")
     data = []
@@ -146,9 +143,9 @@ if __name__ == '__main__':
             max_diff = max(max_diff, diff)
             data.append([f"{x:.2f}", f"{y:.2f}", f"{numerical:.6f}", f"{exact:.6f}", f"{diff:.2e}"])
 
-    print(tabulate.tabulate(data, headers=["x", "y", "Численное", "Точное", "|Разность|"], tablefmt='simple_grid'))
+    print(tabulate.tabulate(data, headers=["x", "y", "Численное", "Точное", "Погрешность"], tablefmt='simple_grid'))
     print("-----------------------------------------------------------------------------")
     print(f"Максимальное отличие точного и численного решений: {max_diff:.6e}\n"
-          f"Количество итераций, {iters}/10000\n"
-          f"Точность на последнем шаге, {acc}")
+          f"Количество итераций: {iters}/10000\n"
+          f"Точность на последнем шаге: {acc}")
     s.plot()
