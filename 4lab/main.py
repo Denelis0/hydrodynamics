@@ -105,7 +105,7 @@ if __name__ == '__main__':
     ax.xaxis.set_major_locator(plt.MultipleLocator(1))
     print("-----------------------------------------------------------------------------")
     print(
-        "Лабораторная работа №4: уравнение переноса ∂u/∂t+a∂=*∂u/∂x=0 с скоростью а=2.\n"
+        "Лабораторная работа №4: уравнение переноса ∂u/∂t+a*∂u/∂x=0 с скоростью а=2.\n"
         "Начальные условия: Прямоугольный (rectangle), треугольный (triangle) и гладкий (impulse) импульс")
     print("Граничные условия: u(0,t)=0\n")
     print("Точное решение представлено в виде u(x,t)=(x-at)\n"
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     def update(frame):
         plt.cla()
         #ax.plot(x, area_new_1[frame], '-', label='метод 1')
-        #ax.plot(x,area_new_2[frame], '-', label = 'метод 2')
+        ax.plot(x,area_new_2[frame], '-', label = 'метод 2')
         #ax.plot(x, area_new_3[frame], '-', label='метод 3')
         ax.plot(x, generate_precise(type, a, frame, hx, n, r), '-', label='Точное решение')
         plt.legend()
